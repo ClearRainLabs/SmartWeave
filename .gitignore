@@ -4,3 +4,4 @@ pkg/
 smartweave-package.tgz
 
 build/
+initialState.json
