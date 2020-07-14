@@ -55,7 +55,12 @@ export default class TestHelper {
 
     swGlobal._activeTx = await this.getInteractionTx(jwt)
 
-    const res = await execute(handler, { jwt, ipfs }, state)
+    const input = {
+      jwt,
+      ipfs
+    }
+
+    const res = await execute(handler, { input }, state)
 
     return res
   }

@@ -5,3 +5,4 @@ smartweave-package.tgz
 
 build/
 initialState.json
+testIPFS.js

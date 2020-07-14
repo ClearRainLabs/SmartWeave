@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "arweave": "^1.7.1",
+    "base64url": "^3.0.1",
     "promises-tho": "^1.1.0",
     "yargs": "^15.3.1"
   },

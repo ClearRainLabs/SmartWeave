@@ -1,7 +1,7 @@
 /* global ContractAssert, ContractError */
 
 import checkRoleOps, { hasAdminPrivileges } from './roles'
-import { getPayload, checkPayload, isNotPreviousChild } from './utils'
+import { getPayloadNoVerify, checkPayload, isNotPreviousChild } from './utils'
 import {
   SET_ACCESS,
   ADD_CHILD,
@@ -9,7 +9,7 @@ import {
 } from 'clearrain/functionTypes'
 
 export async function handle (state, action) {
-  const payload = await getPayload(action.jwt, action.ipfs)
+  const payload = await getPayloadNoVerify(action.input.jwt)
 
   // ensure the payload has the correct nonce and contract id. This prevents reusing a signature.
   checkPayload(state, payload)
