@@ -9,7 +9,7 @@ import {
 } from 'clearrain/functionTypes'
 
 export async function handle (state, action) {
-  const payload = await getPayloadNoVerify(action.input.jwt)
+  const payload = await getPayloadNoVerify(action.input)
 
   // ensure the payload has the correct nonce and contract id. This prevents reusing a signature.
   checkPayload(state, payload)
