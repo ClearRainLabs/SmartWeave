@@ -2,5 +2,6 @@
   "extends": [
     "standard",
     "plugin:mocha/recommended"
-  ]
+  ],
+  "ignorePatterns": ["src/**/*"]
 }
