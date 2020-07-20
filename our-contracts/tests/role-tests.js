@@ -1,9 +1,9 @@
 /* global describe, before, it, after, beforeEach */
 
-import { initState, OWNER, testKeys } from './test-helpers/constants'
-import TestHelper from './test-helpers'
-import * as functionTypes from 'clearrain/functionTypes'
+import { initState, OWNER, testKeys } from './helpers/constants'
+import TestHelper from './helpers'
 import { assert } from 'chai'
+import interactions from './helpers/interactions'
 
 describe('Community Roles', function () {
   let state
@@ -38,12 +38,8 @@ describe('Community Roles', function () {
     let interaction
 
     beforeEach(function () {
-      interaction = {
-        input: {
-          function: functionTypes.TRANSFER_OWNERSHIP,
-          newOwner: NEW_OWNER
-        }
-      }
+      interaction = interactions.ownership
+      interaction.newOwner = NEW_OWNER
     })
 
     it('successfully transfers ownership', async function () {
@@ -51,7 +47,7 @@ describe('Community Roles', function () {
       assert.equal(res.type, 'ok')
       assert.equal(res.state.owner, NEW_OWNER)
 
-      interaction.input.newOwner = OWNER
+      interaction.newOwner = OWNER
       const res2 = await packageNExecute(interaction, res.state, NEW_OWNER)
       assert.equal(res2.type, 'ok')
     })
@@ -62,7 +58,7 @@ describe('Community Roles', function () {
     })
 
     it('fails when new owner is not a valid 3ID', async function () {
-      interaction.input.newOwner = 'not a did'
+      interaction.newOwner = 'not a did'
 
       const res = await packageNExecute(interaction, state, OWNER)
       assert.equal(res.result, '\'not a did\' not recognized as a valid 3ID')
@@ -74,19 +70,11 @@ describe('Community Roles', function () {
     let removeInteraction
 
     before(function () {
-      addInteraction = {
-        input: {
-          function: functionTypes.ADMIN_ADD,
-          admin: ADMIN
-        }
-      }
+      addInteraction = interactions.admins.add
+      addInteraction.admin = ADMIN
 
-      removeInteraction = {
-        input: {
-          function: functionTypes.ADMIN_REMOVE,
-          admin: ADMIN
-        }
-      }
+      removeInteraction = interactions.admins.remove
+      removeInteraction.admin = ADMIN
     })
 
     it('add and remove an admin', async function () {
@@ -117,19 +105,11 @@ describe('Community Roles', function () {
     let removeInteraction
 
     before(function () {
-      addInteraction = {
-        input: {
-          function: functionTypes.MOD_ADD,
-          mod: MOD
-        }
-      }
+      addInteraction = interactions.moderators.add
+      addInteraction.moderator = MOD
 
-      removeInteraction = {
-        input: {
-          function: functionTypes.MOD_REMOVE,
-          mod: MOD
-        }
-      }
+      removeInteraction = interactions.moderators.remove
+      removeInteraction.moderator = MOD
     })
 
     async function testAdd (caller = OWNER) {
@@ -173,19 +153,11 @@ describe('Community Roles', function () {
     let removeInteraction
 
     before(function () {
-      addInteraction = {
-        input: {
-          function: functionTypes.MEMBER_ADD,
-          member: MEMBER
-        }
-      }
+      addInteraction = interactions.members.add
+      addInteraction.member = MEMBER
 
-      removeInteraction = {
-        input: {
-          function: functionTypes.MEMBER_REMOVE,
-          member: MEMBER
-        }
-      }
+      removeInteraction = interactions.members.remove
+      removeInteraction.member = MEMBER
     })
 
     it('adds anyone to open community', async function () {
@@ -202,11 +174,11 @@ describe('Community Roles', function () {
 
     it('members cannot remove', async function () {
       state = (await packageNExecute(addInteraction, state, MEMBER)).state
-      addInteraction.input.member = MEMBER2
+      addInteraction.member = MEMBER2
       let res = await packageNExecute(addInteraction, state, MEMBER2)
       state = res.state
 
-      removeInteraction.input.member = MEMBER2
+      removeInteraction.member = MEMBER2
       res = await packageNExecute(removeInteraction, state, MEMBER)
       state = res.state
       assert.equal(res.result, 'Caller must have moderator privileges to remove a member')
@@ -220,12 +192,7 @@ describe('Community Roles', function () {
     })
 
     it('close community and add fails', async function () {
-      const closeCom = {
-        input: {
-          function: functionTypes.SET_ACCESS,
-          isOpen: false
-        }
-      }
+      const closeCom = interactions.access.close
 
       let res = await packageNExecute(closeCom, state, OWNER)
       state = res.state

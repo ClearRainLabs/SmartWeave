@@ -1,9 +1,9 @@
 /* global describe, it, before, after */
 
-import { fullState, OWNER, testKeys } from './test-helpers/constants'
-import TestHelper from './test-helpers'
-import * as functionTypes from 'clearrain/functionTypes'
+import { fullState, OWNER, testKeys, OTHER_COMMUNITY } from './helpers/constants'
+import TestHelper from './helpers'
 import { assert } from 'chai'
+import interactions from './helpers/interactions'
 
 describe('Miscellaneous functions', function () {
   let state
@@ -31,78 +31,67 @@ describe('Miscellaneous functions', function () {
   })
 
   describe('test set access of the community', function () {
-    let interaction
+    let close
+    let open
 
     before(function () {
-      interaction = {
-        input: {
-          function: functionTypes.SET_ACCESS,
-          isOpen: false
-        }
-      }
+      close = interactions.access.close
+      open = interactions.access.open
     })
 
     it('owner can change access', async function () {
-      const res = await packageNExecute(interaction, state, OWNER)
+      const res = await packageNExecute(close, state, OWNER)
       state = res.state
       assert.equal(state.isOpen, false)
     })
 
     it('admin can change access', async function () {
-      interaction.input.isOpen = true
-      const res = await packageNExecute(interaction, state, ADMIN)
+      const res = await packageNExecute(open, state, ADMIN)
       state = res.state
       assert.equal(state.isOpen, true)
     })
 
     it('moderator attempt to change access fails', async function () {
-      const res = await packageNExecute(interaction, state, MOD)
+      const res = await packageNExecute(open, state, MOD)
       assert.equal(res.result, 'Must have admin privileges to set access')
     })
   })
 
   describe('Test child community functions', function () {
-    let otherCommunity
-    let interaction
+    let addInteraction
+    let removeInteraction
 
     before(function () {
-      otherCommunity = 'some hash that point to a community id of another contract'
-      interaction = {
-        input: {
-          function: functionTypes.ADD_CHILD,
-          communityId: otherCommunity
-        }
-      }
+      addInteraction = interactions.children.add
+      removeInteraction = interactions.children.remove
     })
 
     it('anyone can add a child community initially', async function () {
-      const res = await packageNExecute(interaction, state, MEMBER)
+      const res = await packageNExecute(addInteraction, state, MEMBER)
       state = res.state
-      assert.equal(state.children[otherCommunity], true)
+      assert.equal(state.children[OTHER_COMMUNITY], true)
     })
 
     it('fails when someone without admin privileges tries to remove a community', async function () {
-      interaction.input.function = functionTypes.REMOVE_CHILD
-      const res = await packageNExecute(interaction, state, MOD)
+      const res = await packageNExecute(removeInteraction, state, MOD)
       assert.equal(res.result, 'Caller must have admin privileges to remove a community')
     })
 
     it('admin can remove a community', async function () {
-      const res = await packageNExecute(interaction, state, ADMIN)
+      const res = await packageNExecute(removeInteraction, state, ADMIN)
       state = res.state
-      assert.equal(state.children[otherCommunity], false)
+      assert.equal(state.children[OTHER_COMMUNITY], false)
     })
 
     it('fails to add a community that has been previously removed', async function () {
-      interaction.input.function = functionTypes.ADD_CHILD
-      const res = await packageNExecute(interaction, state, MOD)
+      const res = await packageNExecute(addInteraction, state, MOD)
       assert.equal(res.result, 'A community that has been removed can only be added back with admin privileges')
     })
 
     it('allows admin to add back a community', async function () {
-      const res = await packageNExecute(interaction, state, ADMIN)
+      const res = await packageNExecute(addInteraction, state, ADMIN)
       state = res.state
-      assert.equal(state.children[otherCommunity], true)
+      assert.equal(state.children[OTHER_COMMUNITY], true)
     })
   })
 })
