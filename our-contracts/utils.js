@@ -9,13 +9,8 @@ export function checkPayload (state, payload) {
   const prevNonce = state.nonces[caller] || 0
   ContractAssert(prevNonce + 1 === payload.nonce, 'Nonce provided in payload is invalid')
 
-  const contractId = getTag('Contract')
+  const contractId = SmartWeave.contract.id
 
-  /*
-   * make sure the contractId is not false. It shouldn't be if we assume interactions are queried based
-   * on the contract Id but if that changes, we want to prevent the insecure workaround of setting no contractId
-   * and setting payload.contractId to false
-   */
   ContractAssert(contractId, 'No contract ID provided.')
   ContractAssert(contractId === payload.contractId, 'The contract ID provided is invalid.')
 }

@@ -45,7 +45,7 @@ export default class TestHelper {
     if (this.isRemote) {
       contractInfo = await loadContract(arweave, this.contractId)
     } else {
-      contractInfo = createContractExecutionEnvironment(arweave, contractSrc)
+      contractInfo = createContractExecutionEnvironment(arweave, contractSrc, this.contractId)
     }
 
     swGlobal = contractInfo.swGlobal

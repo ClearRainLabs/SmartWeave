@@ -4,32 +4,36 @@ import { unpackTags } from "./utils";
 import { readContract } from "./contract-read";
 
 /**
- * 
- * This class is be exposed as a global for contracts 
+ *
+ * This class is be exposed as a global for contracts
  * as 'SmartWeave' and provides an API for getting further
  * information or using utility and crypto functions from
  * inside the contracts execution.
- * 
+ *
  * It provides an api:
  *
- * - SmartWeave.transaction.id 
- * - SmartWeave.transaction.reward 
- * - SmartWeave.block.height 
- * - etc 
- * 
- * and access to some of the arweave utils: 
- * - SmartWeave.arweave.utils 
+ * - SmartWeave.transaction.id
+ * - SmartWeave.transaction.reward
+ * - SmartWeave.block.height
+ * - etc
+ *
+ * and access to some of the arweave utils:
+ * - SmartWeave.arweave.utils
  * - SmartWeave.arweave.crypto
  * - SmartWeave.arweave.wallets
  * - SmartWeave.arweave.ar
- * 
+ *
  */
 export class SmartWeaveGlobal {
 
   transaction: Transaction
-  block: Block 
-  
+  block: Block
+
   arweave: Pick<Arweave, 'ar' | 'wallets' | 'utils' | 'crypto'>
+
+  contract: {
+    id: string
+  }
 
   contracts: {
     readContractState(contractId: string): Promise<any>
@@ -41,13 +45,14 @@ export class SmartWeaveGlobal {
     return !this._activeTx
   }
 
-  constructor(arweave: Arweave) {
+  constructor(arweave: Arweave, contract: { id: string }) {
     this.arweave = {
       ar: arweave.ar,
       utils: arweave.utils,
       wallets: arweave.wallets,
       crypto: arweave.crypto,
     }
+    this.contract = contract;
     this.transaction = new Transaction(this);
     this.block = new Block(this);
     this.contracts = {
@@ -120,9 +125,6 @@ class Block {
     if (!this.global._activeTx) {
       throw new Error('No current Tx');
     }
-    return this.global._activeTx.info.confirmed!.block_indep_hash 
+    return this.global._activeTx.info.confirmed!.block_indep_hash
   }
 }
-
-
-
