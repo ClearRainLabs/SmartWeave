@@ -1,8 +1,10 @@
 export const OWNER = 'did:3:bafyreiewjn5bc7ntxy4ug4a6fhwynjir4vqhb4fdoqfztfbvju5ooguofu'
 export const OTHER_COMMUNITY = 'some hash that point to a community id of another contract'
 
+export const REMOTE_CONTRACT_ID = 'th76PmwfV5zgUsf3LLiI_qic7n8p4sHKarAIDqR-kG0' // 'ZiBxuvFUNJlSx6tPlF2uvoAA9tA5NWW2-naLjXn7NAw'
+
 const initState = {
-  name: 'RAINtest',
+  name: 'Dev-Testing',
   isOpen: true,
   owner: OWNER,
   admins: {},
@@ -19,7 +21,7 @@ initState.members[OWNER] = true
 export { initState }
 
 export const fullState = {
-  name: 'RAINtest',
+  name: 'Dev-Testing',
   isOpen: true,
   owner:
    OWNER,

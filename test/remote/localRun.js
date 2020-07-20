@@ -1,22 +1,24 @@
 import TestHelper from '../helpers'
 import getBatches from './txBatches'
 import { initState, testKeys } from '../helpers/constants'
+import debug from 'debug'
+
+const log = debug('localRun')
 
 let state
 let helper
 let batches
 let counter = 1
 
-dryRun()
-
-async function dryRun () {
+export async function localRun () {
   await runSetup()
 
+  let endState
   for (let i = 0; i < batches.length; i++) {
-    await testBatch(batches, i)
+    endState = await testBatch(batches, i)
   }
 
-  process.exit()
+  return endState
 }
 
 async function runSetup () {
@@ -31,11 +33,13 @@ async function testBatch (batches, i) {
   const batch = batches[i]
 
   for (let j = batch.length - 1; j >= 0; j--) {
-    console.log(`executing test ${counter++}...`)
+    log(`executing test ${counter++}...`)
     const call = batch[j]
 
     const res = await helper.packageNExecute(call.interaction, state, call.caller)
-    if (res.type !== 'ok') console.error(res, 'THE INTERACTION DID NOT SUCCEED.')
+    if (res.type !== 'ok') console.error('\nThe following interaction did not succeed:', res)
     state = res.state
   }
+
+  return state
 }

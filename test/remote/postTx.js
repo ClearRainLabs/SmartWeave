@@ -2,13 +2,15 @@ import fs from 'fs'
 import path from 'path'
 import TestHelper from '../helpers'
 import getBatches from './txBatches'
-import { createContractFromTx } from '../../../src/contract-create'
-import initialState from '../../../initialState.json'
+import { createContractFromTx } from '../../src/contract-create'
+import initialState from '../../initialState.json'
 import { testKeys } from '../helpers/constants'
 import Arweave from 'arweave/node'
 const { argv } = require('yargs')
 
 require('dotenv').config()
+
+const CONTRACT_SRC = 'Bv9CBpJ1TQBLLYxMZpOwS51uoZeXyFeuDUbQzpcizA8'
 
 let helper
 let batches
@@ -30,11 +32,10 @@ postInteractions(willCreateContract)
 
 export async function postInteractions (create = false) {
   let contractId
-  let blockHeight = 0
 
   if (create) {
-    blockHeight = await createContract()
-    console.log(`Contract created at height ${blockHeight}`)
+    contractId = await createContract()
+    console.log('Contract created successfully.')
   }
 
   helper = new TestHelper(true, contractId)
@@ -44,15 +45,14 @@ export async function postInteractions (create = false) {
   console.log('Posting transactions...')
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i]
-    blockHeight = await postOnNewBlock(batch, blockHeight)
+    await postNWait(batch)
   }
 
   process.exit()
 }
 
 async function createContract () {
-  const CONTRACT_SRC = 'Bv9CBpJ1TQBLLYxMZpOwS51uoZeXyFeuDUbQzpcizA8'
-
+  console.log(`Creating contract with source ${CONTRACT_SRC}...`)
   const contractId = await createContractFromTx(arweave, devWallet, CONTRACT_SRC, JSON.stringify(initialState))
 
   let txStatus = await arweave.transactions.getStatus(contractId)
@@ -65,31 +65,26 @@ async function createContract () {
 
   console.log(`Contract created with id ${contractId}`)
 
-  return txStatus.confirmed.block_height
+  return contractId
 }
 
-async function postOnNewBlock (batch, prevHeight) {
-  const getCurrentHeight = async () => {
-    const networkInfo = await arweave.network.getInfo()
-    return networkInfo.height
-  }
-  let currentHeight = await getCurrentHeight()
-
-  while (currentHeight <= prevHeight) {
-    console.log('Waiting for new block...')
-    await delay(45)
-    currentHeight = await getCurrentHeight()
-    console.log(`Block height: ${currentHeight}`)
-  }
-
-  console.log(`Posting batch at block height ${currentHeight}...`)
+// post batch of transactions and wait for them to be confirmed
+async function postNWait (batch) {
+  console.log('Posting batch of transactions...')
+  let someId
   for (let i = 0; i < batch.length; i++) {
     const call = batch[i]
     const jwt = await helper.package(call.interaction, call.caller)
-    await postTx(jwt)
+    someId = await postTx(jwt)
   }
 
-  return currentHeight
+  let txStatus = await arweave.transactions.getStatus(someId)
+
+  while (txStatus.confirmed === null) {
+    console.log('Waiting for transaction to be confirmed...')
+    await delay(60)
+    txStatus = await arweave.transactions.getStatus(someId)
+  }
 }
 
 async function postTx (input) {
@@ -115,6 +110,7 @@ async function postTx (input) {
 
   const response = await arweave.transactions.post(interactionTx)
   console.log(`Posted tx #${counter++} with status ${response.status}`)
+  return interactionTx.id
 }
 
 const delay = (seconds) => {

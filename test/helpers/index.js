@@ -1,17 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import Arweave from 'arweave/node'
-import { execute } from '../../../src/contract-step'
+import { execute } from '../../src/contract-step'
 import DidTestHelper from '3id-test-helper'
 import IPFS from 'ipfs'
 import wallet from './test-wallet'
-import { loadContract, createContractExecutionEnvironment } from '../../../src/contract-load'
+import { loadContract, createContractExecutionEnvironment } from '../../src/contract-load'
+import { REMOTE_CONTRACT_ID } from './constants'
 
 require('dotenv').config()
 
 const LOCAL_CONTRACT_ID = 'random id for testing'
-
-const REMOTE_CONTRACT_ID = 'ZiBxuvFUNJlSx6tPlF2uvoAA9tA5NWW2-naLjXn7NAw'
 
 const arweave = Arweave.init({
   host: 'arweave.net',
@@ -19,7 +18,7 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-const CONTRACT_PATH = path.resolve(__dirname, '../../../build/community.js')
+const CONTRACT_PATH = path.resolve(__dirname, '../../build/community.js')
 
 const contractBuffer = fs.readFileSync(CONTRACT_PATH)
 const contractSrc = contractBuffer.toString()
@@ -113,7 +112,7 @@ export default class TestHelper {
     interactionTx.addTag('Contract', this.contractId)
     interactionTx.addTag('Input', JSON.stringify(input))
 
-    // await arweave.transactions.sign(interactionTx, wallet)
+    await arweave.transactions.sign(interactionTx, wallet)
 
     // interaction Tx needs to satisfy InteractionTx interface
     const fullTx = this.fillUnusedTxValues(interactionTx)
