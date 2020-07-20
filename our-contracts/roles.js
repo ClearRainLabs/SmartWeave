@@ -42,17 +42,17 @@ export default function checkRoleOps (state, payload) {
 
   if (input.function === MOD_ADD) {
     ContractAssert(hasAdminPrivileges(caller, state), 'Must be owner or admin to add a moderator')
-    ContractAssert(is3ID(input.mod), `'${input.mod}' not recognized as a valid 3ID`)
+    ContractAssert(is3ID(input.moderator), `'${input.moderator}' not recognized as a valid 3ID`)
 
-    state.moderators[input.mod] = true
+    state.moderators[input.moderator] = true
     return { isRoleOp: true, state }
   }
 
   if (input.function === MOD_REMOVE) {
-    ContractAssert(isRemoveSelf(caller, input.mod) || hasAdminPrivileges(caller, state), 'Must be owner or admin to remove a moderator')
-    ContractAssert(is3ID(input.mod), `'${input.mod}' not recognized as a valid 3ID`)
+    ContractAssert(isRemoveSelf(caller, input.moderator) || hasAdminPrivileges(caller, state), 'Must be owner or admin to remove a moderator')
+    ContractAssert(is3ID(input.moderator), `'${input.moderator}' not recognized as a valid 3ID`)
 
-    state.moderators[input.mod] = false
+    state.moderators[input.moderator] = false
     return { isRoleOp: true, state }
   }
 
