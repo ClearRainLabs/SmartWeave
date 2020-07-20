@@ -37,11 +37,3 @@ export async function getPayload (jwt, ipfs) {
 
   return verifiedJWT.payload
 }
-
-function getTag (name) {
-  const tags = SmartWeave.transaction.tags
-
-  if (tags[name]) return tags[name]
-
-  return false
-}
