@@ -6,9 +6,10 @@
     "example": "examples"
   },
   "scripts": {
-    "test:contracts": "mocha -r ts-node/register -r @babel/register -t 20000 our-contracts/tests/",
-    "test:remote": "nodemon -e js,ts -r esm -r ts-node/register our-contracts/tests/remote/dryRun.js",
-    "postTransactions": "node -r esm -r ts-node/register our-contracts/tests/remote/postTx.js",
+    "test:contracts": "mocha -r ts-node/register -r @babel/register -t 20000 test/",
+    "test:remote": "DEBUG=localRun nodemon -e js,ts -r esm -r ts-node/register test/remote/execLocalRun.js",
+    "postTransactions": "node -r esm -r ts-node/register test/remote/postTx.js",
+    "testRemoteState": "node -r esm -r ts-node/register test/remote/testRemoteState.js",
     "build:contracts": "rollup --config ./rollup.config.js && node our-contracts/bin/trimBundle.js",
     "version": "npx @pika/pack",
     "build:sdk": "rm -rf pkg && npx @pika/pack && cp -r pkg/dist-src/bin pkg/dist-node && tar -zcvf smartweave-package.tgz pkg/"
@@ -46,6 +47,7 @@
   "dependencies": {
     "arweave": "^1.7.1",
     "base64url": "^3.0.1",
+    "debug": "^4.1.1",
     "promises-tho": "^1.1.0",
     "yargs": "^15.3.1"
   },
