@@ -4,7 +4,7 @@ import json from '@rollup/plugin-json'
 import nodePolyfills from 'rollup-plugin-node-polyfills'
 
 export default {
-  input: 'our-contracts/community.js',
+  input: 'contracts/community.js',
   output: {
     file: 'build/community.js',
     format: 'cjs'

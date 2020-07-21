@@ -10,7 +10,7 @@
     "test:remote": "DEBUG=localRun nodemon -e js,ts -r esm -r ts-node/register test/remote/execLocalRun.js",
     "postTransactions": "node -r esm -r ts-node/register test/remote/postTx.js",
     "testRemoteState": "node -r esm -r ts-node/register test/remote/testRemoteState.js",
-    "build:contracts": "rollup --config ./rollup.config.js && node our-contracts/bin/trimBundle.js",
+    "build:contracts": "rollup --config ./rollup.config.js && node contracts/bin/trimBundle.js",
     "version": "npx @pika/pack",
     "build:sdk": "rm -rf pkg && npx @pika/pack && cp -r pkg/dist-src/bin pkg/dist-node && tar -zcvf smartweave-package.tgz pkg/"
   },
