@@ -8,7 +8,7 @@ import {
   MOD_REMOVE,
   MEMBER_ADD,
   MEMBER_REMOVE
-} from 'clearrain/functionTypes'
+} from 'outpost-protocol/functionTypes'
 
 const DID_3_PREFIX = 'did:3:'
 

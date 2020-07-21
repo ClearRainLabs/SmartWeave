@@ -3375,14 +3375,6 @@ clean-stack@^2.0.0:
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
-clearrain@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/clearrain/-/clearrain-1.2.2.tgz#1a835172f971ff177d0cbc1bd0816ad0957ced8c"
-  integrity sha512-nyUg6gmFlEE9HyTYHHslfP9Vt8M9cXcME0ibYOzwB3zx9dcjsyY/GzNBc8ZzOtf5GT1Dixe248bW9zuQFpJcrw==
-  dependencies:
-    ajv "^6.12.2"
-    did-jwt "^4.4.0"
-
 cli-boxes@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-2.2.0.tgz#538ecae8f9c6ca508e3c3c95b453fe93cb4c168d"
@@ -9298,6 +9290,14 @@ osenv@^0.1.4:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
+
+outpost-protocol@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/outpost-protocol/-/outpost-protocol-1.0.0.tgz#43d6ac18f44e302ed8a4ff28758fae0036928ce1"
+  integrity sha512-QQGLBMQqpIGCHrHaP36NfIOJjS2Uj28fLrWJj9cFru80X+aZ9F+Hit2meaTT34XzY7XGOPKp55vk1DslWdlfzw==
+  dependencies:
+    ajv "^6.12.2"
+    did-jwt "^4.4.0"
 
 ow@^0.15.0:
   version "0.15.1"

@@ -1,4 +1,4 @@
-import * as functionTypes from 'clearrain/functionTypes'
+import * as functionTypes from 'outpost-protocol/functionTypes'
 import { OTHER_COMMUNITY } from '../helpers/constants'
 
 const interactions = {

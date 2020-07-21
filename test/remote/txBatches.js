@@ -1,4 +1,4 @@
-import interactions from './interactions'
+import interactions from '../helpers/interactions'
 import { OWNER } from '../helpers/constants'
 
 export default function getBatches (accounts) {

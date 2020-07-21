@@ -6,7 +6,7 @@ import {
   SET_ACCESS,
   ADD_CHILD,
   REMOVE_CHILD
-} from 'clearrain/functionTypes'
+} from 'outpost-protocol/functionTypes'
 
 export async function handle (state, action) {
   const payload = await getPayloadNoVerify(action.input)
