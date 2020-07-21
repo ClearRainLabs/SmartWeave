@@ -1,5 +1,5 @@
 import * as functionTypes from 'clearrain/functionTypes'
-import { OTHER_COMMUNITY } from './constants'
+import { OTHER_COMMUNITY } from '../helpers/constants'
 
 const interactions = {
   access: {
