@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test:contracts": "mocha -r ts-node/register -r @babel/register -t 20000 test/",
-    "test:remote": "DEBUG=localRun nodemon -e js,ts -r esm -r ts-node/register test/remote/execLocalRun.js",
+    "test:localRun": "DEBUG=localRun nodemon -e js,ts -r esm -r ts-node/register test/remote/execLocalRun.js",
     "postTransactions": "node -r esm -r ts-node/register test/remote/postTx.js",
     "testRemoteState": "node -r esm -r ts-node/register test/remote/testRemoteState.js",
     "build:contracts": "rollup --config ./rollup.config.js && node contracts/bin/trimBundle.js",

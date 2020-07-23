@@ -1,6 +1,6 @@
 import TestHelper from '../helpers'
 import getBatches from './txBatches'
-import { initState, testKeys } from '../helpers/constants'
+import { initState, testKeys, OTHER_COMMUNITY } from '../helpers/constants'
 import debug from 'debug'
 
 const log = debug('localRun')
@@ -24,7 +24,7 @@ export async function localRun () {
 async function runSetup () {
   helper = new TestHelper()
   const accounts = await helper.setupEnv(testKeys)
-  batches = getBatches(accounts)
+  batches = getBatches(accounts, OTHER_COMMUNITY)
 
   state = Object.assign({}, initState)
 }

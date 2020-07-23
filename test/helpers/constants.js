@@ -1,7 +1,7 @@
 export const OWNER = 'did:3:bafyreiewjn5bc7ntxy4ug4a6fhwynjir4vqhb4fdoqfztfbvju5ooguofu'
-export const OTHER_COMMUNITY = 'some hash that point to a community id of another contract'
+export const OTHER_COMMUNITY = 'iKArqYu4AXEJxMgzY-JMTknbWIQsovi7EcIBggjkz3M'
 
-export const REMOTE_CONTRACT_ID = 'th76PmwfV5zgUsf3LLiI_qic7n8p4sHKarAIDqR-kG0' // 'ZiBxuvFUNJlSx6tPlF2uvoAA9tA5NWW2-naLjXn7NAw'
+export const REMOTE_CONTRACT_ID = 'P6IeiCcEBuGR4EDhzruUfvGV_5RNB6AWPo3u0noc0Rk' // 'th76PmwfV5zgUsf3LLiI_qic7n8p4sHKarAIDqR-kG0' // 'ZiBxuvFUNJlSx6tPlF2uvoAA9tA5NWW2-naLjXn7NAw'
 
 const initState = {
   name: 'Dev-Testing',

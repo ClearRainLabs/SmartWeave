@@ -29,8 +29,11 @@ const devWallet = JSON.parse(rawWallet)
 const willCreateContract = Boolean(argv.createContract)
 
 postInteractions(willCreateContract)
+  .then(contractId => {
+    postInteractions(true, contractId)
+  })
 
-export async function postInteractions (create = false) {
+export async function postInteractions (create = true, childContract) {
   let contractId
 
   if (create) {
@@ -40,7 +43,7 @@ export async function postInteractions (create = false) {
 
   helper = new TestHelper(true, contractId)
   const accounts = await helper.setupEnv(testKeys)
-  batches = getBatches(accounts)
+  batches = getBatches(accounts, childContract)
 
   console.log('Posting transactions...')
   for (let i = 0; i < batches.length; i++) {
@@ -48,7 +51,8 @@ export async function postInteractions (create = false) {
     await postNWait(batch)
   }
 
-  process.exit()
+  helper.stopIPFS()
+  return contractId
 }
 
 async function createContract () {
@@ -74,6 +78,7 @@ async function postNWait (batch) {
   let someId
   for (let i = 0; i < batch.length; i++) {
     const call = batch[i]
+
     const jwt = await helper.package(call.interaction, call.caller)
     someId = await postTx(jwt)
   }
