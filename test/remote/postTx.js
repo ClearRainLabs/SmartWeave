@@ -4,13 +4,13 @@ import TestHelper from '../helpers'
 import getBatches from './txBatches'
 import { createContractFromTx } from '../../src/contract-create'
 import initialState from '../../initialState.json'
-import { testKeys } from '../helpers/constants'
+import { testKeys, REMOTE_CONTRACT_ID } from '../helpers/constants'
 import Arweave from 'arweave/node'
 const { argv } = require('yargs')
 
 require('dotenv').config()
 
-const CONTRACT_SRC = 'Bv9CBpJ1TQBLLYxMZpOwS51uoZeXyFeuDUbQzpcizA8'
+const CONTRACT_SRC = 'rP7vAXZeZ7f-4AJUeBjPr03QrF7w1_KP1M5q5VrJHKE'
 
 let helper
 let batches
@@ -26,12 +26,18 @@ const devWalletPath = path.resolve(__dirname, process.env.DEV_WALLET)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
 
-const willCreateContract = Boolean(argv.createContract)
+// const willCreateContract = Boolean(argv.createContract)
 
+/*
 postInteractions(willCreateContract)
   .then(contractId => {
+    console.log(contractId, 'THE CONTRACT ID RETURNED FROM FIRST RUN')
     postInteractions(true, contractId)
   })
+  */
+
+postInteractions(true, 'RaSbcDvwLwkauh_1O2BBzyBZ-Onu_LzGzcB7p-7GGXs')
+  .then(() => console.log('FINISHED'))
 
 export async function postInteractions (create = true, childContract) {
   let contractId
@@ -52,7 +58,7 @@ export async function postInteractions (create = true, childContract) {
   }
 
   helper.stopIPFS()
-  return contractId
+  return contractId || REMOTE_CONTRACT_ID
 }
 
 async function createContract () {

@@ -1,10 +1,9 @@
 import Arweave from 'arweave/node'
-import { readContract } from '../../src/contract-read'
+import IPFS from 'ipfs'
+import { readOutpostContract } from '../../src/readOutpostContract'
 import { localRun } from './localRun'
-import { REMOTE_CONTRACT_ID } from '../helpers/constants'
+import { REMOTE_CONTRACT_ID, DID_PINNING_ADDR } from '../helpers/constants'
 import { isEqual } from 'lodash'
-
-// const contractId = 'th76PmwfV5zgUsf3LLiI_qic7n8p4sHKarAIDqR-kG0'
 
 const arweave = Arweave.init({
   host: 'arweave.net',
@@ -13,10 +12,13 @@ const arweave = Arweave.init({
 })
 
 async function run () {
+  const ipfs = await IPFS.create()
+  await ipfs.swarm.connect(DID_PINNING_ADDR)
+
   console.log('getting local state...')
-  const localState = await localRun()
+  const localState = await localRun(ipfs)
   console.log('getting remote state...')
-  const remoteState = await readContract(arweave, REMOTE_CONTRACT_ID)
+  const remoteState = await readOutpostContract(arweave, REMOTE_CONTRACT_ID, ipfs)
 
   const allGood = isEqual(localState, remoteState)
   if (allGood) {

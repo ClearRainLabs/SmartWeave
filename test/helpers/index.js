@@ -23,7 +23,6 @@ const CONTRACT_PATH = path.resolve(__dirname, '../../build/community.js')
 const contractBuffer = fs.readFileSync(CONTRACT_PATH)
 const contractSrc = contractBuffer.toString()
 
-let ipfs
 let didHelper
 let handler
 let swGlobal
@@ -39,7 +38,7 @@ export default class TestHelper {
     }
   }
 
-  async setupEnv (testKeys) {
+  async setupEnv (testKeys, ipfs) {
     let contractInfo
     if (this.isRemote) {
       contractInfo = await loadContract(arweave, this.contractId)
@@ -50,8 +49,13 @@ export default class TestHelper {
     swGlobal = contractInfo.swGlobal
     handler = contractInfo.handler
 
-    ipfs = await IPFS.create()
-    didHelper = new DidTestHelper(ipfs)
+    if (ipfs) {
+      this.ipfs = ipfs
+    } else {
+      this.ipfs = await IPFS.create()
+    }
+
+    didHelper = new DidTestHelper(this.ipfs)
 
     const accounts = await didHelper.generateAccounts(testKeys)
     await didHelper.getOwner() // sets the signer for the owner DID
@@ -87,7 +91,7 @@ export default class TestHelper {
 
     swGlobal._activeTx = await this.getInteractionTx(jwt)
 
-    const res = await execute(handler, { input: jwt /*, ipfs */ }, state)
+    const res = await execute(handler, { input: jwt, ipfs: this.ipfs }, state)
 
     return res
   }
@@ -137,6 +141,6 @@ export default class TestHelper {
   }
 
   stopIPFS () {
-    ipfs.stop()
+    this.ipfs.stop()
   }
 }

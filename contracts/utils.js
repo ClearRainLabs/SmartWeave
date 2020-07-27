@@ -1,6 +1,6 @@
 /* global SmartWeave, ContractAssert, ContractError */
 
-import { verifyJWT, decodeJWT } from 'did-jwt'
+import { verifyJWT } from 'did-jwt'
 import { Resolver } from 'did-resolver'
 import { getResolver } from '3id-resolver'
 
@@ -17,11 +17,6 @@ export function checkPayload (state, payload) {
 
 export function isNotPreviousChild (communityId, state) {
   return typeof state.children[communityId] === 'undefined'
-}
-
-// short term fix for a problem with DID verification so we can continue building
-export async function getPayloadNoVerify (jwt) {
-  return decodeJWT(jwt).payload
 }
 
 export async function getPayload (jwt, ipfs) {

@@ -4,6 +4,7 @@ import { retryWithBackoff, batch, softFailWith } from 'promises-tho';
 import { getTag, arrayToHex, unpackTags } from './utils';
 import { execute, ContractInteraction } from './contract-step';
 import { InteractionTx } from './interaction-tx';
+import { decodeJWT } from 'did-jwt'
 
 /**
  * Queries all interaction transactions and replays a contract to its latest state.
@@ -14,7 +15,7 @@ import { InteractionTx } from './interaction-tx';
  * @param contractId  the Transaction Id of the contract
  * @param height      if specified the contract will be replayed only to this block height
  */
-export async function readContract(arweave: Arweave, contractId: string, height = Number.POSITIVE_INFINITY): Promise<any> {
+export async function readOutpostContract(arweave: Arweave, contractId: string, ipfs: object, height = Number.POSITIVE_INFINITY): Promise<any> {
 
   const contractInfo = await loadContract(arweave, contractId);
 
@@ -50,7 +51,7 @@ export async function readContract(arweave: Arweave, contractId: string, height 
   let transactions = await arweave.arql(arql);
   const getTxInfoFn = retryWithBackoff(
       { tries: 3, startMs: 1000 },
-      (id) => getFullTxInfo(arweave, id)
+      (id) => getFullTxInfoWNonce(arweave, id)
   );
   const batcher = batch(
     { batchDelayMs: 50, batchSize: 3 },
@@ -93,6 +94,7 @@ export async function readContract(arweave: Arweave, contractId: string, height 
       const interaction: ContractInteraction = {
         input: input,
         caller: txInfos[i].from,
+        ipfs
       }
 
       swGlobal._activeTx = txInfos[i];
@@ -144,6 +146,42 @@ async function getFullTxInfo(arweave: Arweave, id: string): Promise<InteractionT
   const block_height = `000000${info.confirmed.block_height}`.slice(-12);
 
   const sortKey = `${block_height},${hashed}`
+
+  return { tx, info, id: tx.id, sortKey, from: await arweave.wallets.ownerToAddress(tx.owner) }
+}
+
+async function getFullTxInfoWNonce(arweave: Arweave, id: string): Promise<InteractionTx | undefined> {
+  const [tx, info] = await Promise.all([
+      arweave.transactions.get(id).catch(e => {
+        if (e.type === 'TX_PENDING') {
+          return undefined
+        }
+        throw(e);
+      }),
+      arweave.transactions.getStatus(id)
+  ])
+
+  if (!tx || !info || !info.confirmed) {
+    return undefined;
+  }
+
+  // Construct a string that will lexographically sort.
+  // { block_height, sha256(block_indep_hash + txid) }
+  // pad block height to 12 digits and convert hash value
+  // to a hex string.
+  const blockHashBytes = arweave.utils.b64UrlToBuffer(info.confirmed.block_indep_hash)
+  const txIdBytes = arweave.utils.b64UrlToBuffer(id)
+  const concatted = arweave.utils.concatBuffers([blockHashBytes, txIdBytes])
+  const hashed = arrayToHex(await arweave.crypto.hash(concatted))
+  const block_height = `000000${info.confirmed.block_height}`.slice(-12);
+
+  // Add nonce to sort order so transactions from the same account execute in order
+  let jwt = getTag(tx, 'Input')
+  jwt = jwt.substring(1, jwt.length - 1)
+  const input = decodeJWT(jwt).payload
+  const nonce = input.nonce
+
+  const sortKey = `${block_height},${nonce},${hashed}`
 
   return { tx, info, id: tx.id, sortKey, from: await arweave.wallets.ownerToAddress(tx.owner) }
 }
