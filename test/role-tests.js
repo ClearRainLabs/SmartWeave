@@ -14,7 +14,6 @@ describe('Community Roles', function () {
   let NEW_OWNER
 
   let helper
-  let packageNExecute
 
   before(async function () {
     helper = new TestHelper()
@@ -25,13 +24,11 @@ describe('Community Roles', function () {
     MEMBER2 = accounts[3]
     NEW_OWNER = accounts[4]
 
-    packageNExecute = helper.packageNExecute.bind(helper)
-
     state = Object.assign({}, initState)
   })
 
   after(async function () {
-    helper.stopIPFS()
+    await helper.stopIPFS()
   })
 
   describe('Transfer Ownership', function () {
@@ -43,24 +40,24 @@ describe('Community Roles', function () {
     })
 
     it('successfully transfers ownership', async function () {
-      const res = await packageNExecute(interaction, state, OWNER)
+      const res = await helper.packageNExecute(interaction, state, OWNER)
       assert.equal(res.type, 'ok')
       assert.equal(res.state.owner, NEW_OWNER)
 
       interaction.newOwner = OWNER
-      const res2 = await packageNExecute(interaction, res.state, NEW_OWNER)
+      const res2 = await helper.packageNExecute(interaction, res.state, NEW_OWNER)
       assert.equal(res2.type, 'ok')
     })
 
     it('fails transfer if callerDID is not owner', async function () {
-      const res = await packageNExecute(interaction, state, ADMIN)
+      const res = await helper.packageNExecute(interaction, state, ADMIN)
       assert.equal(res.result, 'Must be owner to transfer ownership')
     })
 
     it('fails when new owner is not a valid 3ID', async function () {
       interaction.newOwner = 'not a did'
 
-      const res = await packageNExecute(interaction, state, OWNER)
+      const res = await helper.packageNExecute(interaction, state, OWNER)
       assert.equal(res.result, '\'not a did\' not recognized as a valid 3ID')
     })
   })
@@ -80,14 +77,14 @@ describe('Community Roles', function () {
     it('add and remove an admin', async function () {
       let res
       async function testAdd () {
-        res = await packageNExecute(addInteraction, state, OWNER)
+        res = await helper.packageNExecute(addInteraction, state, OWNER)
         state = res.state
         assert.equal(state.admins[ADMIN], true)
       }
 
       await testAdd()
 
-      res = await packageNExecute(removeInteraction, state, OWNER)
+      res = await helper.packageNExecute(removeInteraction, state, OWNER)
       state = res.state
       assert.equal(state.admins[ADMIN], false)
 
@@ -95,7 +92,7 @@ describe('Community Roles', function () {
     })
 
     it('fails when not called by owner', async function () {
-      const res = await packageNExecute(addInteraction, state, ADMIN)
+      const res = await helper.packageNExecute(addInteraction, state, ADMIN)
       assert.equal(res.result, 'Must be owner to add an admin')
     })
   })
@@ -113,7 +110,7 @@ describe('Community Roles', function () {
     })
 
     async function testAdd (caller = OWNER) {
-      const res = await packageNExecute(addInteraction, state, caller)
+      const res = await helper.packageNExecute(addInteraction, state, caller)
       state = res.state
       assert.equal(state.moderators[MOD], true)
     }
@@ -123,7 +120,7 @@ describe('Community Roles', function () {
     })
 
     it('remove mod by owner', async function () {
-      const res = await packageNExecute(removeInteraction, state, OWNER)
+      const res = await helper.packageNExecute(removeInteraction, state, OWNER)
       state = res.state
       assert.equal(state.moderators[MOD], false)
     })
@@ -133,7 +130,7 @@ describe('Community Roles', function () {
     })
 
     it('moderator can remove themself', async function () {
-      const res = await packageNExecute(removeInteraction, state, MOD)
+      const res = await helper.packageNExecute(removeInteraction, state, MOD)
       state = res.state
       assert.equal(state.moderators[MOD], false)
     })
@@ -143,7 +140,7 @@ describe('Community Roles', function () {
     })
 
     it('add without admin privileges fails', async function () {
-      const res = await packageNExecute(addInteraction, state, MOD)
+      const res = await helper.packageNExecute(addInteraction, state, MOD)
       assert.equal(res.result, 'Must be owner or admin to add a moderator')
     })
   })
@@ -161,31 +158,31 @@ describe('Community Roles', function () {
     })
 
     it('adds anyone to open community', async function () {
-      const res = await packageNExecute(addInteraction, state, MEMBER)
+      const res = await helper.packageNExecute(addInteraction, state, MEMBER)
       state = res.state
       assert.equal(state.members[MEMBER], true)
     })
 
     it('moderators and above can remove', async function () {
-      const res = await packageNExecute(removeInteraction, state, MOD)
+      const res = await helper.packageNExecute(removeInteraction, state, MOD)
       state = res.state
       assert.equal(state.members[MEMBER], false)
     })
 
     it('members cannot remove', async function () {
-      state = (await packageNExecute(addInteraction, state, MEMBER)).state
+      state = (await helper.packageNExecute(addInteraction, state, MEMBER)).state
       addInteraction.member = MEMBER2
-      let res = await packageNExecute(addInteraction, state, MEMBER2)
+      let res = await helper.packageNExecute(addInteraction, state, MEMBER2)
       state = res.state
 
       removeInteraction.member = MEMBER2
-      res = await packageNExecute(removeInteraction, state, MEMBER)
+      res = await helper.packageNExecute(removeInteraction, state, MEMBER)
       state = res.state
       assert.equal(res.result, 'Caller must have moderator privileges to remove a member')
     })
 
     it('members can remove themselves', async function () {
-      const res = await packageNExecute(removeInteraction, state, MEMBER2)
+      const res = await helper.packageNExecute(removeInteraction, state, MEMBER2)
       state = res.state
 
       assert.equal(state.members[MEMBER2], false)
@@ -194,11 +191,11 @@ describe('Community Roles', function () {
     it('close community and add fails', async function () {
       const closeCom = interactions.access.close
 
-      let res = await packageNExecute(closeCom, state, OWNER)
+      let res = await helper.packageNExecute(closeCom, state, OWNER)
       state = res.state
       assert.equal(state.isOpen, false)
 
-      res = await packageNExecute(addInteraction, state, MEMBER2)
+      res = await helper.packageNExecute(addInteraction, state, MEMBER2)
       assert.equal(res.result, 'Caller must have moderator privileges to add a member')
     })
   })

@@ -12,7 +12,7 @@ const initState = {
   moderators: {},
   members: {},
   children: {},
-  nonces: {}
+  timestamps: {}
 }
 
 initState.admins[OWNER] = true
@@ -43,7 +43,7 @@ export const fullState = {
      'did:3:bafyreifmak4zyruqtfkythxx3nvclphzftcyaq2kjhjzchjink5xjxrnii': true
    },
   children: {},
-  nonces: {}
+  timestamps: {}
 }
 
 export const testKeys = [

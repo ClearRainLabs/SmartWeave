@@ -1,7 +1,7 @@
 /* global ContractAssert, ContractError */
 
 import checkRoleOps, { hasAdminPrivileges } from './roles'
-import { getPayload, checkPayload, isNotPreviousChild } from './utils'
+import { getPayload, checkPayload, isNotPreviousChild, setTimeStamp } from './utils'
 import {
   SET_ACCESS,
   ADD_CHILD,
@@ -14,7 +14,7 @@ export async function handle (state, action) {
   // ensure the payload has the correct nonce and contract id. This prevents reusing a signature.
   checkPayload(state, payload)
 
-  state.nonces[payload.iss] = payload.nonce
+  setTimeStamp(state, payload)
 
   const op = checkRoleOps(state, payload)
   if (op.isRoleOp) return { state: op.state }

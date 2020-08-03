@@ -29,7 +29,6 @@ let swGlobal
 
 export default class TestHelper {
   constructor (isRemote = false, remoteContract = REMOTE_CONTRACT_ID) {
-    this.nonces = {}
     this.isRemote = Boolean(isRemote)
     this.contractId = isRemote ? remoteContract : LOCAL_CONTRACT_ID
 
@@ -73,13 +72,8 @@ export default class TestHelper {
   }
 
   async package (input, caller) {
-    const nonce = this.nonces[caller] ? this.nonces[caller] + 1 : 1
-
-    this.nonces[caller] = nonce
-
     const interaction = {
       input,
-      nonce,
       contractId: this.contractId
     }
 
@@ -140,7 +134,7 @@ export default class TestHelper {
     }
   }
 
-  stopIPFS () {
-    this.ipfs.stop()
+  async stopIPFS () {
+    await this.ipfs.stop()
   }
 }

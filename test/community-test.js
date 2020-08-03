@@ -27,7 +27,7 @@ describe('Miscellaneous functions', function () {
   })
 
   after(async function () {
-    helper.stopIPFS()
+    await helper.stopIPFS()
   })
 
   describe('test set access of the community', function () {
