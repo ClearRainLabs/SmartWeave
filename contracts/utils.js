@@ -7,7 +7,7 @@ import { getResolver } from '3id-resolver'
 export function checkPayload (state, payload) {
   const caller = payload.iss
   const callerTimestamps = state.timestamps[caller]
-  ContractAssert(!callerTimestamps || typeof callerTimestamps[payload.iat] === 'undefined', 'Nonce provided in payload is invalid')
+  ContractAssert(!callerTimestamps || !callerTimestamps.includes(payload.iat), 'Timestamp provided has been reused')
 
   const contractId = SmartWeave.contract.id
 
@@ -21,10 +21,10 @@ export function isNotPreviousChild (communityId, state) {
 
 export function setTimeStamp (state, payload) {
   if (!state.timestamps[payload.iss]) {
-    state.timestamps[payload.iss] = {}
-    state.timestamps[payload.iss][payload.iat] = true
+    state.timestamps[payload.iss] = []
+    state.timestamps[payload.iss].push(payload.iat)
   } else {
-    state.timestamps[payload.iss][payload.iat] = true
+    state.timestamps[payload.iss].push(payload.iat)
   }
 }
 

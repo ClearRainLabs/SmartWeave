@@ -1,7 +1,7 @@
 export const OWNER = 'did:3:bafyreiewjn5bc7ntxy4ug4a6fhwynjir4vqhb4fdoqfztfbvju5ooguofu'
-export const OTHER_COMMUNITY = 'RaSbcDvwLwkauh_1O2BBzyBZ-Onu_LzGzcB7p-7GGXs' // '2dE2vCKKGP7-LziJottAiq34vM1UOUazUqv_ukxJnu4'
+export const OTHER_COMMUNITY = 'gvqSWUdeCAub91VKJ6_1yVIvqIAVOgVJXv68ozhFawc' // 'RaSbcDvwLwkauh_1O2BBzyBZ-Onu_LzGzcB7p-7GGXs'
 
-export const REMOTE_CONTRACT_ID = 'cp1ka-VbZJJj_GOraw9cuJznspR2Vdvcqp71TJ3R03Q' // 'RaSbcDvwLwkauh_1O2BBzyBZ-Onu_LzGzcB7p-7GGXs' // 'L5J7av6gQVEoH_dQjDV2Z_TnI3VE8m7Z_Oc7v0mBvWY'
+export const REMOTE_CONTRACT_ID = 'iOJmwmkP-vQxEGKe0F4fWnoU2vBP4tfoilNZzYEPLQY' // 'cp1ka-VbZJJj_GOraw9cuJznspR2Vdvcqp71TJ3R03Q'
 export const DID_PINNING_ADDR = '/dnsaddr/ipfs.3box.io/tcp/443/wss/ipfs/QmZvxEpiVNjmNbEKyQGvFzAY1BwmGuuvdUTmcTstQPhyVC'
 
 const initState = {

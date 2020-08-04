@@ -13,6 +13,8 @@ describe('Miscellaneous functions', function () {
 
   let helper
 
+  let interactionToRepeat
+
   before(async function () {
     helper = new TestHelper()
     const accounts = await helper.setupEnv(testKeys)
@@ -86,9 +88,17 @@ describe('Miscellaneous functions', function () {
     })
 
     it('allows admin to add back a community', async function () {
-      const res = await helper.packageNExecute(addInteraction, state, ADMIN)
+      interactionToRepeat = await helper.package(addInteraction, ADMIN)
+      const res = await helper.executeInteraction(interactionToRepeat, state)
       state = res.state
       assert.equal(state.children[OTHER_COMMUNITY], true)
+    })
+  })
+
+  describe('fails when jwt is reused', function () {
+    it('fails to run', async function () {
+      const res = await helper.executeInteraction(interactionToRepeat, state)
+      assert.equal(res.result, 'Timestamp provided has been reused')
     })
   })
 })

@@ -10,7 +10,7 @@ const { argv } = require('yargs')
 
 require('dotenv').config()
 
-const CONTRACT_SRC = 'rP7vAXZeZ7f-4AJUeBjPr03QrF7w1_KP1M5q5VrJHKE'
+const CONTRACT_SRC = 'eF0e3F3yV-r6jzNw2aH7ND4WgR7KrOU1uoUZAjVY1HI'
 
 let helper
 let batches
@@ -26,18 +26,13 @@ const devWalletPath = path.resolve(__dirname, process.env.DEV_WALLET)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
 
-// const willCreateContract = Boolean(argv.createContract)
+const willCreateContract = Boolean(argv.createContract)
 
-/*
 postInteractions(willCreateContract)
   .then(contractId => {
     console.log(contractId, 'THE CONTRACT ID RETURNED FROM FIRST RUN')
     postInteractions(true, contractId)
   })
-  */
-
-postInteractions(true, 'RaSbcDvwLwkauh_1O2BBzyBZ-Onu_LzGzcB7p-7GGXs')
-  .then(() => console.log('FINISHED'))
 
 export async function postInteractions (create = true, childContract) {
   let contractId

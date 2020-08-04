@@ -20,6 +20,9 @@ async function run () {
   console.log('getting remote state...')
   const remoteState = await readOutpostContract(arweave, REMOTE_CONTRACT_ID, ipfs)
 
+  // test isEqual for all properties except for the time stamps
+  // make sure DIDs have the same number of timestamps
+
   const allGood = isEqual(localState, remoteState)
   if (allGood) {
     console.log('✨ Test completed successfully.')

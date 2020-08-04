@@ -80,14 +80,18 @@ export default class TestHelper {
     return await didHelper.createJWTFromDID(caller, interaction)
   }
 
-  async packageNExecute (input, state, caller) {
-    const jwt = await this.package(input, caller)
-
+  async executeInteraction (jwt, state) {
     swGlobal._activeTx = await this.getInteractionTx(jwt)
 
     const res = await execute(handler, { input: jwt, ipfs: this.ipfs }, state)
 
     return res
+  }
+
+  async packageNExecute (input, state, caller) {
+    const jwt = await this.package(input, caller)
+
+    return await this.executeInteraction(jwt, state)
   }
 
   // code taken mainly from interactWrite in contract-interact

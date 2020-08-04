@@ -51,7 +51,7 @@ export async function readOutpostContract(arweave: Arweave, contractId: string, 
   let transactions = await arweave.arql(arql);
   const getTxInfoFn = retryWithBackoff(
       { tries: 3, startMs: 1000 },
-      (id) => getFullTxInfoWNonce(arweave, id)
+      (id) => getFullTxInfo(arweave, id)
   );
   const batcher = batch(
     { batchDelayMs: 50, batchSize: 3 },
@@ -146,42 +146,6 @@ async function getFullTxInfo(arweave: Arweave, id: string): Promise<InteractionT
   const block_height = `000000${info.confirmed.block_height}`.slice(-12);
 
   const sortKey = `${block_height},${hashed}`
-
-  return { tx, info, id: tx.id, sortKey, from: await arweave.wallets.ownerToAddress(tx.owner) }
-}
-
-async function getFullTxInfoWNonce(arweave: Arweave, id: string): Promise<InteractionTx | undefined> {
-  const [tx, info] = await Promise.all([
-      arweave.transactions.get(id).catch(e => {
-        if (e.type === 'TX_PENDING') {
-          return undefined
-        }
-        throw(e);
-      }),
-      arweave.transactions.getStatus(id)
-  ])
-
-  if (!tx || !info || !info.confirmed) {
-    return undefined;
-  }
-
-  // Construct a string that will lexographically sort.
-  // { block_height, sha256(block_indep_hash + txid) }
-  // pad block height to 12 digits and convert hash value
-  // to a hex string.
-  const blockHashBytes = arweave.utils.b64UrlToBuffer(info.confirmed.block_indep_hash)
-  const txIdBytes = arweave.utils.b64UrlToBuffer(id)
-  const concatted = arweave.utils.concatBuffers([blockHashBytes, txIdBytes])
-  const hashed = arrayToHex(await arweave.crypto.hash(concatted))
-  const block_height = `000000${info.confirmed.block_height}`.slice(-12);
-
-  // Add nonce to sort order so transactions from the same account execute in order
-  let jwt = getTag(tx, 'Input')
-  jwt = jwt.substring(1, jwt.length - 1)
-  const input = decodeJWT(jwt).payload
-  const nonce = input.nonce
-
-  const sortKey = `${block_height},${nonce},${hashed}`
 
   return { tx, info, id: tx.id, sortKey, from: await arweave.wallets.ownerToAddress(tx.owner) }
 }
