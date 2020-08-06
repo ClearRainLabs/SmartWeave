@@ -15,7 +15,6 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-console.log(process.env.DEV_WALLET, 'THE DEV WALLET')
 const devWalletPath = path.resolve(__dirname, process.env.DEV_WALLET)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
@@ -23,7 +22,7 @@ const devWallet = JSON.parse(rawWallet)
 // change the contract input for different functions
 const CONTRACT_INPUT = {
   function: REMOVE_CHILD,
-  communityId: 'El-PaaA_wPx4nJuL9tcriZ6OPVoMOl8shmdgjG3Nr4A'
+  communityId: 'I9Ct97BILm6aa7KWKq64wROFSqqhLbi3Ifchp3LPU8o'
 }
 
 async function postInteraction () {
@@ -36,7 +35,7 @@ async function postInteraction () {
 
   const txId = await interactWrite(arweave, devWallet, CONTRACT_ID, jwt)
 
-  console.log(txId, 'THE TXID OF THE TRANSACTION')
+  console.log(`Interaction posted at ${txId}`)
   await helper.stopIPFS()
 }
 
