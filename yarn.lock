@@ -2253,7 +2253,7 @@ aggregate-error@^3.0.0, aggregate-error@^3.0.1:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.5.5:
+ajv@^6.10.0, ajv@^6.10.2, ajv@^6.5.5:
   version "6.12.3"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.3.tgz#18c5af38a111ddeb4f2697bd78d68abc1cabd706"
   integrity sha512-4K0cK3L1hsqk9xIb2z9vs/XU+PGJZ9PNpJRDS9YLzmNdX6jmVPfamLvTJr0aDAusnHyCHO6MjzlkAsgtqp9teA==
@@ -9635,12 +9635,9 @@ osenv@^0.1.4:
     os-tmpdir "^1.0.0"
 
 outpost-protocol@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/outpost-protocol/-/outpost-protocol-1.0.0.tgz#43d6ac18f44e302ed8a4ff28758fae0036928ce1"
-  integrity sha512-QQGLBMQqpIGCHrHaP36NfIOJjS2Uj28fLrWJj9cFru80X+aZ9F+Hit2meaTT34XzY7XGOPKp55vk1DslWdlfzw==
-  dependencies:
-    ajv "^6.12.2"
-    did-jwt "^4.4.0"
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/outpost-protocol/-/outpost-protocol-1.1.1.tgz#e3423cf339982b9696a0a63f1b7815f0ddefde0d"
+  integrity sha512-Xe0UegKgr1OZHhDwxRL6QmWAI+chuoiktO5bkMryXGYWsjxGsMue3qBEsO9JjliwysOMolJY5ME6Aqa9+/Xg6w==
 
 ow@^0.15.0:
   version "0.15.1"
