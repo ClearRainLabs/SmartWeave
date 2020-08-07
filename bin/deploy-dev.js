@@ -13,7 +13,7 @@ const wallet = JSON.parse(rawWallet)
 
 const srcPath = path.resolve(__dirname, '../build/community.js')
 const contractSrc = fs.readFileSync(srcPath)
-const initState = createInitState(OWNER, DEV_NAME, IS_OPEN)
+const initState = JSON.stringify(createInitState(OWNER, DEV_NAME, IS_OPEN))
 
 const arweave = Arweave.init({
   host: 'arweave.net',
