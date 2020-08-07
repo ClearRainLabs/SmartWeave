@@ -15,7 +15,7 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-const devWalletPath = path.resolve(__dirname, process.env.DEV_WALLET)
+const devWalletPath = path.resolve(__dirname, `../..${process.env.DEV_WALLET}`)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
 

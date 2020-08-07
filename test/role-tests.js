@@ -1,9 +1,10 @@
 /* global describe, before, it, after, beforeEach */
 
-import { initState, OWNER, testKeys } from './helpers/constants'
+import { DEV_NAME, IS_OPEN, OWNER, testKeys } from './helpers/constants'
 import TestHelper from './helpers'
 import { assert } from 'chai'
 import interactions from './helpers/interactions'
+import { createInitState } from 'outpost-protocol'
 
 describe('Community Roles', function () {
   let state
@@ -23,6 +24,8 @@ describe('Community Roles', function () {
     MEMBER = accounts[2]
     MEMBER2 = accounts[3]
     NEW_OWNER = accounts[4]
+
+    const initState = createInitState(OWNER, DEV_NAME, IS_OPEN)
 
     state = Object.assign({}, initState)
   })

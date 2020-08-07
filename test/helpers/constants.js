@@ -4,22 +4,8 @@ export const OTHER_COMMUNITY = 'gvqSWUdeCAub91VKJ6_1yVIvqIAVOgVJXv68ozhFawc' // 
 export const REMOTE_CONTRACT_ID = 'iOJmwmkP-vQxEGKe0F4fWnoU2vBP4tfoilNZzYEPLQY' // 'cp1ka-VbZJJj_GOraw9cuJznspR2Vdvcqp71TJ3R03Q'
 export const DID_PINNING_ADDR = '/dnsaddr/ipfs.3box.io/tcp/443/wss/ipfs/QmZvxEpiVNjmNbEKyQGvFzAY1BwmGuuvdUTmcTstQPhyVC'
 
-const initState = {
-  name: 'Dev-Testing',
-  isOpen: true,
-  owner: OWNER,
-  admins: {},
-  moderators: {},
-  members: {},
-  children: {},
-  timestamps: {}
-}
-
-initState.admins[OWNER] = true
-initState.moderators[OWNER] = true
-initState.members[OWNER] = true
-
-export { initState }
+export const DEV_NAME = 'Dev-Testing'
+export const IS_OPEN = true
 
 export const fullState = {
   name: 'Dev-Testing',

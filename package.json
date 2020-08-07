@@ -6,6 +6,7 @@
     "example": "examples"
   },
   "scripts": {
+    "deploy:dev": "node -r ts-node/register -r @babel/register bin/deploy-dev.js",
     "test:contracts": "mocha -r ts-node/register -r @babel/register -t 20000 test/",
     "test:localRun": "DEBUG=localRun nodemon -e js,ts -r esm -r ts-node/register test/remote/execLocalRun.js",
     "postTransactions": "node -r esm -r ts-node/register test/remote/postTx.js",

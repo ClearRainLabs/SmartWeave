@@ -5,8 +5,9 @@
 
 import TestHelper from '../helpers'
 import getBatches from './txBatches'
-import { initState, testKeys, OTHER_COMMUNITY } from '../helpers/constants'
+import { OWNER, DEV_NAME, IS_OPEN, testKeys, OTHER_COMMUNITY } from '../helpers/constants'
 import debug from 'debug'
+import { createInitState } from 'outpost-protocol'
 
 const log = debug('localRun')
 
@@ -31,6 +32,7 @@ async function runSetup (ipfs) {
   const accounts = await helper.setupEnv(testKeys, ipfs)
   batches = getBatches(accounts, OTHER_COMMUNITY)
 
+  const initState = createInitState(OWNER, DEV_NAME, IS_OPEN)
   state = Object.assign({}, initState)
 }
 

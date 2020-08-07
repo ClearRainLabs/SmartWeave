@@ -3,14 +3,14 @@ import path from 'path'
 import TestHelper from '../helpers'
 import getBatches from './txBatches'
 import { createContractFromTx } from '../../src/contract-create'
-import initialState from '../../initialState.json'
-import { testKeys, REMOTE_CONTRACT_ID } from '../helpers/constants'
+import { testKeys, REMOTE_CONTRACT_ID, OWNER, DEV_NAME, IS_OPEN } from '../helpers/constants'
 import Arweave from 'arweave/node'
-const { argv } = require('yargs')
+import { createInitState, CONTRACT_SRC } from 'outpost-protocol'
+import { argv } from 'yargs'
 
 require('dotenv').config()
 
-const CONTRACT_SRC = 'eF0e3F3yV-r6jzNw2aH7ND4WgR7KrOU1uoUZAjVY1HI'
+const initialState = createInitState(OWNER, DEV_NAME, IS_OPEN)
 
 let helper
 let batches
@@ -22,7 +22,7 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-const devWalletPath = path.resolve(__dirname, process.env.DEV_WALLET)
+const devWalletPath = path.resolve(__dirname, `../../${process.env.DEV_WALLET}`)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
 
