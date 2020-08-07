@@ -21,10 +21,8 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-/*
 smartweave.createContract(arweave, wallet, contractSrc, initState).then(
   (contractID) => {
     console.log('Contract created in TX: ' + contractID)
   }
 )
-*/
