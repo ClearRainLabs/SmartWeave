@@ -5,11 +5,14 @@ export const REMOTE_CONTRACT_ID = 'iOJmwmkP-vQxEGKe0F4fWnoU2vBP4tfoilNZzYEPLQY' 
 export const DID_PINNING_ADDR = '/dnsaddr/ipfs.3box.io/tcp/443/wss/ipfs/QmZvxEpiVNjmNbEKyQGvFzAY1BwmGuuvdUTmcTstQPhyVC'
 
 export const DEV_NAME = 'Dev-Testing'
+export const NEW_NAME = 'NEW-DEV-NAME'
+export const UPDATED_GUIDELINES_ADDR = 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I'
 export const IS_OPEN = true
 
 export const fullState = {
   name: 'Dev-Testing',
   isOpen: true,
+  guidelines: null,
   owner:
    OWNER,
   admins:

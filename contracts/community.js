@@ -5,7 +5,9 @@ import { getPayload, checkPayload, isNotPreviousChild, setTimeStamp } from './ut
 import {
   SET_ACCESS,
   ADD_CHILD,
-  REMOVE_CHILD
+  REMOVE_CHILD,
+  SET_NAME,
+  SET_GUIDELINES
 } from 'outpost-protocol/functionTypes'
 
 export async function handle (state, action) {
@@ -34,9 +36,6 @@ export async function handle (state, action) {
     ContractAssert(isNotPreviousChild(input.communityId, state) || hasAdminPrivileges(payload.iss, state),
       'A community that has been removed can only be added back with admin privileges')
 
-    // add check to make sure communityId is an arweave contract, will need access to arweave.transaction
-    // get the transaction and then check to make sure it's App-Name is SmartWeaveContract
-
     state.children[input.communityId] = true
 
     return { state }
@@ -46,6 +45,22 @@ export async function handle (state, action) {
     ContractAssert(hasAdminPrivileges(payload.iss, state), 'Caller must have admin privileges to remove a community')
 
     state.children[input.communityId] = false
+
+    return { state }
+  }
+
+  if (input.function === SET_NAME) {
+    ContractAssert(hasAdminPrivileges(payload.iss, state), 'Caller must have admin privileges to set the name of a community')
+
+    state.name = input.name
+
+    return { state }
+  }
+
+  if (input.function === SET_GUIDELINES) {
+    ContractAssert(hasAdminPrivileges(payload.iss, state), 'Caller must have admin privileges to set the guidelines of a community')
+
+    state.guidelines = input.guidelines
 
     return { state }
   }

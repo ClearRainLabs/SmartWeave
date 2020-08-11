@@ -1,6 +1,8 @@
 /* global describe, it, before, after */
 
-import { fullState, OWNER, testKeys, OTHER_COMMUNITY } from './helpers/constants'
+import {
+  fullState, OWNER, testKeys, OTHER_COMMUNITY, NEW_NAME, UPDATED_GUIDELINES_ADDR
+} from './helpers/constants'
 import TestHelper from './helpers'
 import { assert } from 'chai'
 import interactions from './helpers/interactions'
@@ -99,6 +101,20 @@ describe('Miscellaneous functions', function () {
     it('fails to run', async function () {
       const res = await helper.executeInteraction(interactionToRepeat, state)
       assert.equal(res.result, 'Timestamp provided has been reused')
+    })
+  })
+
+  describe('sets community name and guidelines', function () {
+    it('allows admin to set name of community', async function () {
+      const res = await helper.packageNExecute(interactions.setName, state, ADMIN)
+      state = res.state
+      assert.equal(state.name, NEW_NAME)
+    })
+
+    it('allows admin to set the guidelines of the community', async function () {
+      const res = await helper.packageNExecute(interactions.setGuidelines, state, ADMIN)
+      state = res.state
+      assert.equal(state.guidelines, UPDATED_GUIDELINES_ADDR)
     })
   })
 })

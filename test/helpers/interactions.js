@@ -1,5 +1,5 @@
 import * as functionTypes from 'outpost-protocol/functionTypes'
-import { OTHER_COMMUNITY } from '../helpers/constants'
+import { OTHER_COMMUNITY, NEW_NAME, UPDATED_GUIDELINES_ADDR } from '../helpers/constants'
 
 const interactions = {
   access: {
@@ -48,6 +48,14 @@ const interactions = {
     remove: {
       function: functionTypes.MEMBER_REMOVE
     }
+  },
+  setName: {
+    function: functionTypes.SET_NAME,
+    name: NEW_NAME
+  },
+  setGuidelines: {
+    function: functionTypes.SET_GUIDELINES,
+    guidelines: UPDATED_GUIDELINES_ADDR
   }
 }
 
