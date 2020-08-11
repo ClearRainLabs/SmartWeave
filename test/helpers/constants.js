@@ -4,6 +4,9 @@ export const OTHER_COMMUNITY = 'gvqSWUdeCAub91VKJ6_1yVIvqIAVOgVJXv68ozhFawc' // 
 export const REMOTE_CONTRACT_ID = 'iOJmwmkP-vQxEGKe0F4fWnoU2vBP4tfoilNZzYEPLQY' // 'cp1ka-VbZJJj_GOraw9cuJznspR2Vdvcqp71TJ3R03Q'
 export const DID_PINNING_ADDR = '/dnsaddr/ipfs.3box.io/tcp/443/wss/ipfs/QmZvxEpiVNjmNbEKyQGvFzAY1BwmGuuvdUTmcTstQPhyVC'
 
+export const PROD_NAME = 'Outpost'
+export const PROD_OWNER = 'did:3:bafyreiagk6hlbhdnu5glvllprgflwxib3xz4l35lb74ictkwhicgbnvf6e'
+
 export const DEV_NAME = 'Dev-Testing'
 export const NEW_NAME = 'NEW-DEV-NAME'
 export const UPDATED_GUIDELINES_ADDR = 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I'
