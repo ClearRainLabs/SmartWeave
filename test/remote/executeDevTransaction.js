@@ -15,14 +15,14 @@ const arweave = Arweave.init({
   protocol: 'https'
 })
 
-const devWalletPath = path.resolve(__dirname, `../..${process.env.DEV_WALLET}`)
+const devWalletPath = path.resolve(__dirname, `../../${process.env.DEV_WALLET}`)
 const rawWallet = fs.readFileSync(devWalletPath)
 const devWallet = JSON.parse(rawWallet)
 
 // change the contract input for different functions
 const CONTRACT_INPUT = {
   function: REMOVE_CHILD,
-  communityId: 'I9Ct97BILm6aa7KWKq64wROFSqqhLbi3Ifchp3LPU8o'
+  communityId: 'YWDxNRSuJUI-S76VbLBhqxpim-IFlI6PSNf9R1GDxkA'
 }
 
 async function postInteraction () {
