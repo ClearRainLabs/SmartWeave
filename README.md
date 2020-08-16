@@ -1,3 +1,40 @@
+# Outpost SmartWeave Contracts
+
+Our smart contracts are built on Arweave. Arweave smart contracts, a.k.a. SmartWeave contracts, are super cheap and a lot more flexible than those on any other smart contract platform we've seen. Notably they allow use to use an alternate identity system. Rather than using Arweave public keys as identities, we use 3box 3IDs. 3IDs, an implementation of [w3c's DID spec](https://www.w3.org/TR/did-core/#:~:text=A%20DID%20method%20is%20defined,documents%20are%20written%20and%20updated.) are blockchain agnostic identifiers; they'll allow us to use a single identity system as we plan to add features from multiple blockchains in the future.
+
+## The Repo
+- /contracts
+  - our smartweave contracts
+- /src
+  - Arweave's logic for interpreting SmartWeave contracts. Our contracts require an instance of ipfs to run so we created a file readOutpostContract.ts that changes contract-read.ts to pass an instance of ipfs to the contract.
+- /test
+  - tests for the contracts.
+- /bin
+  - a script to deploy the contracts.
+
+### Install dependencies
+```bash
+yarn install
+```
+
+### Build the contracts
+```bash
+yarn build:contracts
+```
+
+### Test the contracts
+```bash
+yarn test:contracts
+```
+
+To deploy the contracts and run some of our scripts for posting transactions, you'll need to create and .env file and set DEV_WALLET to the path to your arweave wallet. The file ./.env.example is provided as an example.
+
+### Deploy a contract
+```bash
+yarn deploy:prod
+```
+
+The rest of the readme is from Arweave's SmartWeave repo which we forked. Refer to it for more information on SmartWeave contracts.
 # SmartWeave
 
 ## Simple, scalable smart contracts on the Arweave protocol
