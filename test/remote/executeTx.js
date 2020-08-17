@@ -1,8 +1,12 @@
 import { interactWrite } from '../../src/contract-interact'
+import { outpostDryRun } from '../../src/outpostDryRun'
 import fs from 'fs'
 import path from 'path'
 import Arweave from 'arweave/node'
 import { PROD_CONTRACT_ID } from 'outpost-protocol'
+import IPFS from 'ipfs'
+
+const IPFS_PINNING_ADDR = '/dnsaddr/ipfs.3box.io/tcp/443/wss/ipfs/QmZvxEpiVNjmNbEKyQGvFzAY1BwmGuuvdUTmcTstQPhyVC'
 
 require('dotenv').config()
 
@@ -45,5 +49,15 @@ export async function postInteraction (jwt) {
   console.log(`Interaction posted at ${txId}`)
 }
 
-const jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1OTc0MjM4NjMsImNvbnRyYWN0SWQiOiJCWENFQktUdi1GdmFuMG04MmFFaTduamRuUnNGRGx1RmtmTjh2cldHNUZJIiwiaW5wdXQiOnsiZnVuY3Rpb24iOiJyZW1vdmVDaGlsZCIsImNvbW11bml0eUlkIjoiVDBHVldfVTNKSTlyR05oRUgyekJ5bF9vNUdhdVozQWtibFgzdFpjWXZ1VSJ9LCJpc3MiOiJkaWQ6MzpiYWZ5cmVpYWdrNmhsYmhkbnU1Z2x2bGxwcmdmbHd4aWIzeHo0bDM1bGI3NGljdGt3aGljZ2JudmY2ZSJ9.r94Zcx1vbGmGqzggb6nkhoyvzK1i-aM3aAJnAVLbhKIHRzGD_tIeGJ5oxI-mV5KhcrgHwDmGA7Lm47SyEgYBCQ'
+export async function testInteraction (jwt) {
+  const ipfs = await IPFS.create()
+  await ipfs.swarm.connect(IPFS_PINNING_ADDR)
+
+  const status = await outpostDryRun(arweave, devWallet, PROD_CONTRACT_ID, jwt, ipfs)
+  console.log(status, 'THE RESULT OF THE TRANSACTION')
+
+  await ipfs.stop()
+}
+
+const jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1OTc2MTY2MDcsImNvbnRyYWN0SWQiOiJCWENFQktUdi1GdmFuMG04MmFFaTduamRuUnNGRGx1RmtmTjh2cldHNUZJIiwiaW5wdXQiOnsiZnVuY3Rpb24iOiJhZGRDaGlsZCIsImNvbW11bml0eUlkIjoiMmtrNkpjZ2g4b211dEJ1T3J5TG5xbDFHeGhadlJtakpGeXZoZzV6NUt5byJ9LCJpc3MiOiJkaWQ6MzpiYWZ5cmVpYWdrNmhsYmhkbnU1Z2x2bGxwcmdmbHd4aWIzeHo0bDM1bGI3NGljdGt3aGljZ2JudmY2ZSJ9.WDOgQ1qInU_mgAteGix9YsmuzzeLOAEn_kxHPdZcDdnStG-HO2IUl29_v-mVSu3NiF_wWjno5IsKeOvKzGlJWQ'
 postInteraction(jwt)
