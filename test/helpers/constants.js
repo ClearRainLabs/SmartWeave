@@ -8,7 +8,12 @@ export const PROD_OWNER = 'did:3:bafyreiagk6hlbhdnu5glvllprgflwxib3xz4l35lb74ict
 
 export const DEV_NAME = 'Dev-Testing'
 export const NEW_NAME = 'NEW-DEV-NAME'
-export const UPDATED_GUIDELINES_ADDR = 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I'
+export const UPDATED_GUIDELINES_ADDR = {
+  image: 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I',
+  url: 'https://someurl.com',
+  description: 'foo foo foo'
+}// 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I'
+
 export const IS_OPEN = true
 
 export const fullState = {

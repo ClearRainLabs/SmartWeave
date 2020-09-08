@@ -114,7 +114,9 @@ describe('Miscellaneous functions', function () {
     it('allows admin to set the guidelines of the community', async function () {
       const res = await helper.packageNExecute(interactions.setGuidelines, state, ADMIN)
       state = res.state
-      assert.equal(state.guidelines, UPDATED_GUIDELINES_ADDR)
+      assert.equal(state.guidelines.image, UPDATED_GUIDELINES_ADDR.image)
+      assert.equal(state.guidelines.url, UPDATED_GUIDELINES_ADDR.url)
+      assert.equal(state.guidelines.description, UPDATED_GUIDELINES_ADDR.description)
     })
   })
 })
