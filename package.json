@@ -1,7 +1,9 @@
 {
   "name": "smartweave",
-  "version": "0.3.2",
+  "version": "0.3.5",
   "description": "Uses lazy-evaluation to move the burden of contract execution from network nodes to smart contract users.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "directories": {
     "example": "examples"
   },
@@ -14,11 +16,20 @@
     "testRemoteState": "node -r esm -r ts-node/register test/remote/testRemoteState.js",
     "postTx": "node -r esm -r ts-node/register test/remote/executeTx.js",
     "build:contracts": "rollup --config ./rollup.config.js && node contracts/bin/trimBundle.js",
-    "version": "npx @pika/pack",
-    "build:sdk": "rm -rf pkg && npx @pika/pack && cp -r pkg/dist-src/bin pkg/dist-node && tar -zcvf smartweave-package.tgz pkg/"
+    "build": "tsc",
+    "prepare": "npm run build",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "clean": "rimraf ./lib",
+    "lint": "eslint --ext .ts,.js src/ examples/",
+    "lint:fix": "npm run lint -- --fix"
   },
+  "files": [
+    "lib/**/*"
+  ],
   "bin": {
-    "smartweave-cli": "dist-node/bin/smartweave-cli.js"
+    "smartweave-cli": "lib/bin/smartweave-cli.js",
+    "smartweave": "lib/bin/smartweave.js"
   },
   "repository": {
     "type": "git",
@@ -31,23 +42,10 @@
     "url": "https://github.com/ArweaveTeam/SmartWeave/issues"
   },
   "homepage": "https://github.com/ArweaveTeam/SmartWeave#readme",
-  "@pika/pack": {
-    "pipeline": [
-      [
-        "@pika/plugin-ts-standard-pkg"
-      ],
-      [
-        "@pika/plugin-build-node"
-      ],
-      [
-        "@pika/plugin-build-web"
-      ],
-      [
-        "@pika/plugin-build-deno"
-      ]
-    ]
-  },
   "dependencies": {
+    "arweave": "^1.9.1",
+    "bignumber.js": "^9.0.0",
+    "loglevel": "^1.7.0",
     "arweave": "^1.7.1",
     "base64url": "^3.0.1",
     "debug": "^4.1.1",
@@ -79,6 +77,7 @@
     "did-resolver": "^2.0.1",
     "eslint": "6.8.0",
     "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard-with-typescript": "^18.0.2",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-mocha": "^7.0.1",
     "eslint-plugin-node": "^11.1.0",
@@ -92,7 +91,11 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.18.2",
     "rollup-plugin-node-polyfills": "^0.2.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "ts-node": "^9.0.0",
+    "typescript": "^3.9.5",
+    "cp-cli": "^2.0.0",
+    "@types/node": "^14.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1"
   }
 }

@@ -1,6 +1,7 @@
 node_modules
 dist/
 pkg/
+lib/
 smartweave-package.tgz
 
 build/

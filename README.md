@@ -53,38 +53,30 @@ For a description of the SDK methods available, you can check [here](SDK.md)
 
 ## CLI Usage
 
-Clone this repository and run `npm install`.
+`npm install -g smartweave`
 
 You can deploy a contract as follows:
 
 ```
-node smartweave-cli --key-file [YOUR KEYFILE] \
-  --create --contract-src [SRC LOCATION] \
-  --init-state [INITIAL STATE FILE]
+smartweave create [SRC LOCATION] [INITIAL STATE FILE] --key-file [YOUR KEYFILE]
 ```
 
 Or, using an existing contract source that is already deployed but with a new initial state and contract id:
 
 ```
-node smartweave-cli --key-file [YOUR KEYFILE] \
-  --create --contract-src-tx [SRC TX] \
-  --init-state [INITIAL STATE FILE]
+smartweave create [SRC TX] [INITIAL STATE FILE] --key-file [YOUR KEYFILE]
 ```
 
 Check its state:
 
 ```
-node smartweave-cli --key-file [YOUR KEYFILE] \
-  --contract [CONTRACT TXID] \
-  --get-state
+smartweave read [CONTRACT TXID]
 ```
 
 Interact with it:
 
 ```
-node smartweave-cli --key-file [YOUR KEYFILE] \
-  --contract [CONTRACT TXID] \
-  --interact \
+smartweave write [CONTRACT TXID] --key-file [YOUR KEYFILE] \
   --input "[CONTRACT INPUT STRING HERE]"
 ```
 
@@ -92,7 +84,7 @@ When interacting with the contract, the value passed to --input must be valid js
 
 `--input '{ "function": "transfer", "qty": 1984 }'`
 
-To test a contract interaction without writing it to the network, append `--dry-run` to your `--interact` call.
+To test a contract interaction without writing it to the network, append `--dry-run` to your `write` call.
 
 ## License
 

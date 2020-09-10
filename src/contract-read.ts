@@ -1,9 +1,8 @@
 import Arweave from 'arweave/node'
-import { loadContract } from './contract-load';
-import { retryWithBackoff, batch, softFailWith } from 'promises-tho';
-import { getTag, arrayToHex, unpackTags } from './utils';
-import { execute, ContractInteraction } from './contract-step';
-import { InteractionTx } from './interaction-tx';
+import { loadContract, createContractExecutionEnvironment } from './contract-load'
+import { arrayToHex, formatTags, log } from './utils'
+import { execute, ContractInteraction } from './contract-step'
+import { InteractionTx } from './interaction-tx'
 
 /**
  * Queries all interaction transactions and replays a contract to its latest state.
@@ -14,136 +13,256 @@ import { InteractionTx } from './interaction-tx';
  * @param contractId  the Transaction Id of the contract
  * @param height      if specified the contract will be replayed only to this block height
  */
-export async function readContract(arweave: Arweave, contractId: string, height = Number.POSITIVE_INFINITY): Promise<any> {
+export async function readContract (arweave: Arweave, contractId: string, height?: number): Promise<any> {
+  const { state } = await syncContract(arweave, contractId, { endHeight: height })
 
-  const contractInfo = await loadContract(arweave, contractId);
+  return state
+}
 
-  let state: any;
+interface SyncOptions {
+  contractSrc: string
+  startHeight: number
+  endHeight: number
+  state: any
+  minFee: number
+  // allows contracts to efficiently use dependencies that would expensive to constantly instantiate (like ipfs for interacting with DIDs)
+  contractDependencies: object
+}
+
+interface SyncedContractInfo {
+  state: any
+  endHeight: number
+  contractSrc: string
+  minFee: number
+}
+
+/**
+ * Replays a contract to its state.
+ *
+ * @param arweave                an Arweave client instance
+ * @param contractId             the Transaction Id of the contract
+ * @param options.contractSrc    The source code of the contract as a string
+ * @param options.startHeight    The block height to start syncing transactions at
+ * @param options.endHeight      The height to stop syncing transactions at
+ * @param options.state          The state of the contract at block (options.startHeight - 1)
+ * @param options.minFee         The minimum fee required for contract interactions
+ * @param options.contractDependencies    Any inputs running the contract depends on
+ */
+export async function syncContract (arweave: Arweave, contractId: string, options: Partial<SyncOptions> = {}): Promise<SyncedContractInfo> {
+  let endHeight = options.endHeight
+  if (!endHeight) {
+    const networkInfo = await arweave.network.getInfo()
+    endHeight = networkInfo.height
+  }
+
+  const contractInfoPromise = getContractInfo(arweave, contractId, JSON.stringify(options.state), options.contractSrc, options.minFee).catch(err => err)
+  const fetchTxPromise = fetchTransactions(arweave, contractId, endHeight, options.startHeight).catch(err => err)
+
+  const [contractInfo, txInfos] = await Promise.all([contractInfoPromise, fetchTxPromise])
+
+  if (contractInfo instanceof Error) throw contractInfo
+  if (txInfos instanceof Error) throw txInfos
+
+  let state: any
   try {
-      state = JSON.parse(contractInfo.initState);
+    state = JSON.parse(contractInfo.initState)
   } catch (e) {
-      throw new Error(`Unable to parse initial state for contract: ${contractId}`);
+    throw new Error(`Unable to parse initial state for contract: ${contractId}`)
   }
 
-  // Load all the interaction txs relevant to this contract.
+  log(arweave, `Replaying ${txInfos.length} confirmed interactions`)
 
-  // This can be made a lot cleaner with some GraphQL features,
-  // (block info in results, pagination)
-  // but for now, we stick with arql and use some utils to help
-  // with concurency and retry on errors.
-  // (we can be firing off thousands of requests here)
-
-  const arql = {
-      op: 'and',
-      expr1: {
-          op: 'equals',
-          expr1: 'App-Name',
-          expr2: 'SmartWeaveAction',
-      },
-      expr2: {
-          op: 'equals',
-          expr1: 'Contract',
-          expr2: contractId
-      }
-  }
-
-  let transactions = await arweave.arql(arql);
-  const getTxInfoFn = retryWithBackoff(
-      { tries: 3, startMs: 1000 },
-      (id) => getFullTxInfo(arweave, id)
-  );
-  const batcher = batch(
-    { batchDelayMs: 50, batchSize: 3 },
-    softFailWith(undefined, getTxInfoFn)
-  )
-  console.log(`Query returned ${transactions.length} interactions`);
-
-  let unconfirmed = await batcher(transactions);
-
-  console.log(`Recieved info for ${unconfirmed.length} transactions`);
-
-  // Filter out txs that are not confirmed yet, not found,
-  // or are below the height we are replaying to.
-
-  let txInfos = unconfirmed
-    .filter(x =>
-      x &&
-      x.info.confirmed &&
-      x.info.confirmed.block_height <= height
-    ) as InteractionTx[]
-
-  console.log(`Replaying ${txInfos.length} confirmed interactions`);
-
-  txInfos.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+  await sortTransactions(arweave, txInfos)
 
   const { handler, swGlobal } = contractInfo
 
   for (let i = 0; i < txInfos.length; i++) {
-      let input;
-      try {
-          input = getTag(txInfos[i].tx, 'Input')
-          input = JSON.parse(input);
-      } catch (e) {}
+    const tags = formatTags(txInfos[i].node.tags)
 
-      if (!input) {
-          console.warn(`Skipping tx with missing or invalid Input tag - ${txInfos[i].id}`);
-          continue;
-      }
+    const currentTx: InteractionTx = {
+      ...txInfos[i].node,
+      tags
+    }
 
-      const interaction: ContractInteraction = {
-        input: input,
-        caller: txInfos[i].from,
-      }
+    let input = currentTx.tags.Input
 
-      swGlobal._activeTx = txInfos[i];
+    // Check that input is not an array. If a tx has multiple input tags, it will be an array
+    if (Array.isArray(input)) {
+      console.warn(`Skipping tx with multiple Input tags - ${currentTx.id}`)
+      continue
+    }
 
-      const result = await execute(handler, interaction, state);
+    input = JSON.parse(input)
 
-      if (result.type === 'exception') {
-        console.warn(`${result.result}`);
-        console.warn(`Executing of interaction: ${txInfos[i].id} threw exception.`);
-      }
-      if (result.type === 'error') {
-        console.warn(`${result.result}`);
-        console.warn(`Executing of interaction: ${txInfos[i].id} returned error.`);
-      }
+    if (!input) {
+      log(arweave, `Skipping tx with missing or invalid Input tag - ${currentTx.id}`)
+      continue
+    }
 
-      state = result.state;
+    const interaction: ContractInteraction = {
+      input,
+      caller: currentTx.owner.address,
+      ...options.contractDependencies
+    }
+
+    swGlobal._activeTx = currentTx
+
+    const result = await execute(handler, interaction, state)
+
+    if (result.type === 'exception') {
+      log(arweave, `${result.result}`)
+      log(arweave, `Executing of interaction: ${currentTx.id} threw exception.`)
+    }
+    if (result.type === 'error') {
+      log(arweave, `${result.result}`)
+      log(arweave, `Executing of interaction: ${currentTx.id} returned error.`)
+    }
+
+    state = result.state
   }
 
-  return state;
+  const { minFee, contractSrc } = contractInfo
+
+  return {
+    state,
+    endHeight,
+    minFee,
+    contractSrc
+  }
 }
 
-// This gets the full Tx Info, and calcutes a sort key.
-// It needs to get the block_height and indep_hash from
-// the status endpoint as well as the tx itself. Returns
-// undefined if the transactions is not confirmed.
-async function getFullTxInfo(arweave: Arweave, id: string): Promise<InteractionTx | undefined> {
-  const [tx, info] = await Promise.all([
-      arweave.transactions.get(id).catch(e => {
-        if (e.type === 'TX_PENDING') {
-          return undefined
-        }
-        throw(e);
-      }),
-      arweave.transactions.getStatus(id)
-  ])
+async function getContractInfo (arweave: Arweave, contractId: string, state?: string, contractSrc?: string, minFee?: number) {
+  if (state && contractSrc) {
+    const { handler, swGlobal } = createContractExecutionEnvironment(arweave, contractSrc, contractId)
 
-  if (!tx || !info || !info.confirmed) {
-    return undefined;
+    return {
+      initState: state,
+      handler,
+      swGlobal,
+      minFee
+    }
   }
 
-  // Construct a string that will lexographically sort.
-  // { block_height, sha256(block_indep_hash + txid) }
-  // pad block height to 12 digits and convert hash value
-  // to a hex string.
-  const blockHashBytes = arweave.utils.b64UrlToBuffer(info.confirmed.block_indep_hash)
-  const txIdBytes = arweave.utils.b64UrlToBuffer(id)
+  return await loadContract(arweave, contractId)
+}
+
+// Sort the transactions based on the sort key generated in addSortKey()
+async function sortTransactions (arweave: Arweave, txInfos: any[]) {
+  const addKeysFuncs = txInfos.map(tx => addSortKey(arweave, tx))
+  await Promise.all(addKeysFuncs)
+
+  txInfos.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+}
+
+// Construct a string that will lexographically sort.
+// { block_height, sha256(block_indep_hash + txid) }
+// pad block height to 12 digits and convert hash value
+// to a hex string.
+async function addSortKey (arweave: Arweave, txInfo: any) {
+  const { node } = txInfo
+
+  const blockHashBytes = arweave.utils.b64UrlToBuffer(node.block.id)
+  const txIdBytes = arweave.utils.b64UrlToBuffer(node.id)
   const concatted = arweave.utils.concatBuffers([blockHashBytes, txIdBytes])
   const hashed = arrayToHex(await arweave.crypto.hash(concatted))
-  const block_height = `000000${info.confirmed.block_height}`.slice(-12);
+  const blockHeight = `000000${node.block.height}`.slice(-12)
 
-  const sortKey = `${block_height},${hashed}`
+  txInfo.sortKey = `${blockHeight},${hashed}`
+}
 
-  return { tx, info, id: tx.id, sortKey, from: await arweave.wallets.ownerToAddress(tx.owner) }
+// the maximum number of transactions we can get from graphql at once
+const MAX_REQUEST = 100
+
+interface TagFilter {
+  name: string
+  values: string[]
+}
+
+interface BlockFilter {
+  max: number
+  min: number
+}
+
+interface ReqVariables {
+  tags: TagFilter[]
+  blockFilter: BlockFilter
+  first: number
+  after?: string
+}
+
+// fetch all contract interactions up to the specified block height
+async function fetchTransactions (arweave: Arweave, contractId: string, endHeight: number, startHeight = 0) {
+  let variables: ReqVariables = {
+    tags: [{
+      name: 'App-Name',
+      values: ['SmartWeaveAction']
+    },
+    {
+      name: 'Contract',
+      values: [contractId]
+    }],
+    blockFilter: {
+      max: endHeight,
+      min: startHeight
+    },
+    first: MAX_REQUEST
+  }
+
+  let transactions = await getNextPage(arweave, variables)
+
+  const txInfos = transactions.edges
+
+  while (transactions.pageInfo.hasNextPage) {
+    const cursor = transactions.edges[MAX_REQUEST - 1].cursor
+
+    variables = {
+      ...variables,
+      after: cursor
+    }
+
+    transactions = await getNextPage(arweave, variables)
+
+    txInfos.push(...transactions.edges)
+  }
+
+  return txInfos
+}
+
+async function getNextPage (arweave: Arweave, variables: ReqVariables) {
+  const query = `query Transactions($tags: [TagFilter!]!, $blockFilter: BlockFilter!, $first: Int!, $after: String) {
+    transactions(tags: $tags, block: $blockFilter, first: $first, sort: HEIGHT_ASC, after: $after) {
+      pageInfo {
+        hasNextPage
+      }
+      edges {
+        node {
+          id
+          owner { address }
+          recipient
+          tags {
+            name
+            value
+          }
+          block {
+            height
+            id
+          }
+          fee { winston }
+          quantity { winston }
+        }
+        cursor
+      }
+    }
+  }`
+
+  const response = await arweave.api.post('graphql', {
+    query,
+    variables
+  })
+
+  if (response.status !== 200) {
+    throw new Error(`Unable to retrieve transactions. Arweave gateway responded with status ${response.status}.`)
+  }
+
+  return response.data.data.transactions
 }
