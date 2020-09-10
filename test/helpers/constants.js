@@ -12,9 +12,10 @@ export const UPDATED_GUIDELINES_ADDR = {
   image: 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I',
   url: 'https://someurl.com',
   description: 'foo foo foo'
-}// 'PHklvhennSoQNpEg5tEmz06DjvdF7A-2t9OyMUxaj1I'
-
+}
 export const IS_OPEN = true
+
+export const REMOTE_CONTRACT_ID = 'need to set this if I keep testing with it'
 
 export const fullState = {
   name: 'Dev-Testing',
