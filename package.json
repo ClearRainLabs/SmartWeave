@@ -43,14 +43,13 @@
   },
   "homepage": "https://github.com/ArweaveTeam/SmartWeave#readme",
   "dependencies": {
-    "arweave": "^1.9.1",
-    "bignumber.js": "^9.0.0",
-    "loglevel": "^1.7.0",
     "arweave": "^1.7.1",
     "base64url": "^3.0.1",
+    "bignumber.js": "^9.0.0",
     "debug": "^4.1.1",
     "dotenv-flow": "^3.2.0",
     "ipfs": "^0.48.1",
+    "loglevel": "^1.7.0",
     "promises-tho": "^1.1.0",
     "yargs": "^15.3.1"
   },
@@ -71,8 +70,12 @@
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.1.0",
+    "@types/node": "^14.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
     "babel-jest": "^26.1.0",
     "chai": "^4.2.0",
+    "cp-cli": "^2.0.0",
     "did-jwt": "^4.4.0",
     "did-resolver": "^2.0.1",
     "eslint": "6.8.0",
@@ -92,10 +95,6 @@
     "rollup": "^2.18.2",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "ts-node": "^9.0.0",
-    "typescript": "^3.9.5",
-    "cp-cli": "^2.0.0",
-    "@types/node": "^14.6.3",
-    "@typescript-eslint/eslint-plugin": "^4.0.1",
-    "@typescript-eslint/parser": "^4.0.1"
+    "typescript": "^3.9.5"
   }
 }

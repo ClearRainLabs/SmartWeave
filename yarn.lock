@@ -9939,9 +9939,9 @@ osenv@^0.1.4:
     os-tmpdir "^1.0.0"
 
 outpost-protocol@^1.0.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/outpost-protocol/-/outpost-protocol-1.3.1.tgz#500e2d56c7b0db63bb2e53e6bdcea90dd3766c3e"
-  integrity sha512-sOdw1i5hlIQUVLW1Rvw5cIYwe4lbSNPDwBEiwKxWQqF5Js57ztUFc7l6dOGHlc7s1NzYyL2lEXBq3sAIJlUClA==
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/outpost-protocol/-/outpost-protocol-1.3.2.tgz#ffbeab6656373df623c9c2c9fe1e5cb8affa2db5"
+  integrity sha512-vNm3BOke2m7pJ+weoJwhkJMkZZbkHMPfytlfiHm5bsHxlcN2qWAv3bSbuLsLe2liB7dZVujN4lP+gahYOFX0Wg==
 
 ow@^0.15.0:
   version "0.15.1"

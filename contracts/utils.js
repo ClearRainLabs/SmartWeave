@@ -19,7 +19,7 @@ export function isNotPreviousChild (communityId, state) {
   return typeof state.children[communityId] === 'undefined'
 }
 
-export function setTimeStamp (state, payload) {
+export function setTimestamp (state, payload) {
   if (!state.timestamps[payload.iss]) {
     state.timestamps[payload.iss] = []
     state.timestamps[payload.iss].push(payload.iat)
